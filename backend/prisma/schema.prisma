@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Author {
+  id          String   @id @default(cuid())
+  name        String
+  affiliation String?
+  email       String?
+  papers      PaperAuthor[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("authors")
+}
+
+model Paper {
+  id              String   @id @default(cuid())
+  title           String
+  abstract        String
+  keywords        String[] // Array of keywords
+  publicationDate DateTime
+  journal         String?
+  conference      String?
+  doi             String?  @unique
+  url             String?
+  filePath        String?
+  metadata        Json?    // Store additional metadata as JSON
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  authors         PaperAuthor[]
+  citations       Citation[]     @relation("SourcePaper")
+  citedBy         Citation[]     @relation("TargetPaper")
+  notes           Note[]
+
+  @@map("papers")
+}
+
+model PaperAuthor {
+  id       String @id @default(cuid())
+  paperId  String
+  authorId String
+  order    Int    @default(0) // Order of authors
+
+  // Relations
+  paper  Paper  @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  author Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([paperId, authorId])
+  @@map("paper_authors")
+}
+
+model Citation {
+  id             String   @id @default(cuid())
+  sourcePaperId  String
+  targetPaperId  String
+  context        String
+  citationType   CitationType
+  pageNumber     Int?
+  createdAt      DateTime @default(now())
+
+  // Relations
+  sourcePaper Paper @relation("SourcePaper", fields: [sourcePaperId], references: [id], onDelete: Cascade)
+  targetPaper Paper @relation("TargetPaper", fields: [targetPaperId], references: [id], onDelete: Cascade)
+
+  @@unique([sourcePaperId, targetPaperId])
+  @@map("citations")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  paperId   String
+  content   String
+  tags      String[] // Array of tags
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  paper       Paper        @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  annotations Annotation[]
+
+  @@map("notes")
+}
+
+model Annotation {
+  id       String   @id @default(cuid())
+  noteId   String
+  type     AnnotationType
+  pageNumber Int
+  position Json     // Store position as JSON: { x: number, y: number, width?: number, height?: number }
+  content  String
+  color    String?
+
+  // Relations
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@map("annotations")
+}
+
+enum CitationType {
+  DIRECT
+  INDIRECT
+  SUPPORTIVE
+  CRITICAL
+  BACKGROUND
+}
+
+enum AnnotationType {
+  HIGHLIGHT
+  COMMENT
+  BOOKMARK
+} 
