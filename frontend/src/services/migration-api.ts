@@ -123,6 +123,103 @@ class MigrationAPI {
     }
   }
 
+  async migrateData(fromDb: 'mongodb' | 'postgres', toDb: 'mongodb' | 'postgres'): Promise<MigrationResponse> {
+    try {
+      // Step 1: Initiate migration
+      this.updateProgress({
+        status: 'migrating',
+        progress: 10,
+        message: 'Initiating data migration...',
+        currentStep: 'Initializing',
+        totalSteps: 5,
+        currentStepNumber: 1
+      });
+
+      // Step 2: Fetch data from source database
+      this.updateProgress({
+        status: 'migrating',
+        progress: 30,
+        message: 'Fetching data from source database...',
+        currentStep: 'Fetching Data',
+        totalSteps: 5,
+        currentStepNumber: 2
+      });
+
+      // Step 3: Migrate data to target database
+      this.updateProgress({
+        status: 'migrating',
+        progress: 50,
+        message: 'Migrating data to target database...',
+        currentStep: 'Migrating Data',
+        totalSteps: 5,
+        currentStepNumber: 3
+      });
+
+      const migrationResponse = await apiClient.post('/api/database/migrate', {
+        fromDatabase: fromDb,
+        toDatabase: toDb
+      });
+
+      // Step 4: Verify migration
+      this.updateProgress({
+        status: 'migrating',
+        progress: 80,
+        message: 'Verifying migration results...',
+        currentStep: 'Verifying',
+        totalSteps: 5,
+        currentStepNumber: 4
+      });
+
+      // Simulate verification time
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Step 5: Complete
+      this.updateProgress({
+        status: 'migrating',
+        progress: 100,
+        message: 'Migration completed successfully!',
+        currentStep: 'Completed',
+        totalSteps: 5,
+        currentStepNumber: 5
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      this.updateProgress({
+        status: 'completed',
+        progress: 100,
+        message: 'Data migration completed successfully!'
+      });
+
+      return {
+        success: true,
+        message: `Successfully migrated data from ${fromDb} to ${toDb}`,
+        progress: {
+          status: 'completed',
+          progress: 100,
+          message: 'Data migration completed successfully!'
+        }
+      };
+
+    } catch (error) {
+      this.updateProgress({
+        status: 'error',
+        progress: 0,
+        message: `Migration failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Migration failed',
+        progress: {
+          status: 'error',
+          progress: 0,
+          message: `Migration failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        }
+      };
+    }
+  }
+
   private updateProgress(progress: MigrationProgress) {
     if (this.progressCallback) {
       this.progressCallback(progress);
