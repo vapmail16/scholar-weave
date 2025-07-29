@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: scholar-weave-postgres
+    environment:
+      POSTGRES_DB: scholar_weave
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/init:/docker-entrypoint-initdb.d
+    networks:
+      - scholar-weave-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: scholar-weave-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: scholar_weave
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - scholar-weave-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: scholar-weave-backend
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/scholar_weave
+      MONGODB_URI: mongodb://mongodb:27017/scholar_weave
+      DATABASE_TYPE: postgres
+      NODE_ENV: production
+      PORT: 3002
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    networks:
+      - scholar-weave-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: sh -c "npx prisma migrate deploy && npm start"
+
+  # Frontend React App
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: scholar-weave-frontend
+    environment:
+      VITE_API_URL: http://localhost:3002
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - scholar-weave-network
+
+volumes:
+  postgres_data:
+  mongodb_data:
+
+networks:
+  scholar-weave-network:
+    driver: bridge 
