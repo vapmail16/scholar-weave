@@ -1,232 +1,245 @@
-# ScholarWeave - Research Paper Management System
+# ScholarWeave 🧠📚
 
-A modern, full-stack application for managing research papers, notes, and citations with support for both MongoDB and PostgreSQL databases.
+A comprehensive research paper management system with dual database support (MongoDB & PostgreSQL) built with modern web technologies.
 
-## 🏗️ Project Structure
+## ✨ Features
 
-```
-scholar-weave/
-├── frontend/                    # React + TypeScript frontend
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── common/         # Shared components (Layout, UI components)
-│   │   │   └── features/       # Feature-specific components (DatabaseToggle)
-│   │   ├── pages/              # Page components (Dashboard, Library, Notes, etc.)
-│   │   ├── hooks/              # Custom React hooks
-│   │   ├── services/           # API service layer
-│   │   ├── types/              # TypeScript type definitions
-│   │   ├── lib/                # Utility libraries
-│   │   └── styles/             # CSS and styling files
-│   └── public/                 # Static assets
-├── backend/                     # Node.js + Express backend
-│   ├── src/
-│   │   ├── api/                # API routes and controllers
-│   │   ├── database/           # Database-related code
-│   │   │   ├── models/         # Database models (MongoDB schemas)
-│   │   │   ├── repositories/   # Repository implementations
-│   │   │   └── migrations/     # Database migration scripts
-│   │   ├── services/           # Business logic services
-│   │   ├── types/              # TypeScript type definitions
-│   │   ├── utils/              # Utility functions
-│   │   └── middleware/         # Express middleware
-│   └── tests/                  # Test files
-├── config/                      # Centralized configuration files
-│   ├── root/                   # Project-wide configuration
-│   ├── frontend/               # Frontend-specific configuration
-│   ├── backend/                # Backend-specific configuration
-│   └── README.md               # Configuration documentation
-├── shared/                      # Shared code between frontend/backend
-│   ├── types/                  # Shared TypeScript types
-│   └── constants/              # Shared constants
-├── docker/                      # Docker configuration files
-├── scripts/                     # Project-wide utility scripts
-└── docs/                        # Project documentation
-```
+### 🔄 **Dual Database Support**
+- **MongoDB**: Flexible document-based storage
+- **PostgreSQL**: Relational database with ACID compliance
+- **Runtime Database Switching**: Switch between databases without restart
+- **Repository Pattern**: Clean abstraction layer for database operations
+
+### 📄 **Core Functionality**
+- **Paper Management**: Upload, organize, and search research papers
+- **Note Taking**: Create and manage notes with tags and annotations
+- **Citation Tracking**: Track and manage citations between papers
+- **Advanced Search**: Full-text search with filters and sorting
+
+### 🎨 **Modern Frontend**
+- **React 18** with TypeScript for type safety
+- **Tailwind CSS** for responsive design
+- **shadcn/ui** components for consistent UI
+- **Database Toggle** for easy switching between MongoDB and PostgreSQL
+
+### 🚀 **Backend Architecture**
+- **Node.js** with Express.js
+- **TypeScript** for type safety
+- **Prisma ORM** for PostgreSQL
+- **MongoDB Native Driver** for MongoDB
+- **Repository Pattern** for clean data access
+
+### 🐳 **DevOps & Deployment**
+- **Docker** configuration for easy deployment
+- **Docker Compose** for local development
+- **Environment-based configuration**
+- **Database migration scripts**
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - Component library
+- **React Router** - Navigation
+- **React Query** - Data fetching
+
+### Backend
+- **Node.js** - Runtime
+- **Express.js** - Web framework
+- **TypeScript** - Type safety
+- **Prisma** - PostgreSQL ORM
+- **MongoDB Driver** - MongoDB access
+- **Jest** - Testing
+
+### Database
+- **PostgreSQL** - Primary relational database
+- **MongoDB** - Document database
+- **Docker** - Containerization
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 18+ 
 - Docker and Docker Compose
-- npm or yarn
+- Git
 
-### 1. Clone and Setup
+### 1. Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/tangy83/scholar-weave.git
 cd scholar-weave
 ```
 
-### 2. Start Services
+### 2. Start Databases with Docker
 ```bash
-# Start database containers
-docker-compose -f docker/docker-compose.yml up -d postgres mongodb
+# Start PostgreSQL and MongoDB
+docker-compose -f docker/docker-compose.yml up -d
+```
 
-# Install dependencies
+### 3. Setup Backend
+```bash
+cd backend
 npm install
-cd backend && npm install && cd ..
+cp env.example .env
+# Edit .env with your database credentials
+npm run build
+npm start
+```
 
-# Start backend (MongoDB by default)
-cd backend && npm run dev
-
-# Start frontend (in new terminal)
+### 4. Setup Frontend
+```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-### 3. Access Application
-- **Frontend**: http://localhost:8080
+### 5. Access the Application
+- **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3001
-- **Health Check**: http://localhost:3001/health
+- **PostgreSQL**: localhost:5432
+- **MongoDB**: localhost:27017
 
-## 🗄️ Database Support
+## 📁 Project Structure
 
-The application supports both MongoDB and PostgreSQL with a seamless switching mechanism:
-
-### Database Toggle
-- **UI Component**: Located in the top-right corner of the application
-- **Real-time Status**: Shows current database connection status
-- **One-click Switching**: Switch between MongoDB and PostgreSQL
-- **API Endpoint**: `POST /api/database/switch`
-
-### Current Database Status
-- **MongoDB**: 🍃 Green theme with leaf emoji
-- **PostgreSQL**: 🐘 Blue theme with elephant emoji
-
-## 📁 Key Directories Explained
-
-### Frontend Structure
-- **`components/common/`**: Reusable UI components (Layout, buttons, forms)
-- **`components/features/`**: Feature-specific components (DatabaseToggle)
-- **`pages/`**: Main application pages
-- **`services/`**: API client and service layer
-- **`hooks/`**: Custom React hooks for state management
-
-### Backend Structure
-- **`api/`**: Express routes and API endpoints
-- **`database/models/`**: MongoDB schemas and Prisma models
-- **`database/repositories/`**: Data access layer implementations
-- **`database/migrations/`**: Database migration scripts
-- **`services/`**: Business logic and domain services
-
-### Shared Structure
-- **`shared/types/`**: TypeScript interfaces shared between frontend/backend
-- **`shared/constants/`**: Application constants and configuration
+```
+scholar-weave/
+├── backend/                 # Backend API server
+│   ├── src/
+│   │   ├── api/            # API routes
+│   │   ├── database/       # Database models and repositories
+│   │   │   ├── models/     # MongoDB models
+│   │   │   └── repositories/ # Repository implementations
+│   │   └── index.ts        # Main server file
+│   ├── prisma/             # Prisma schema and migrations
+│   └── tests/              # Backend tests
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── components/     # React components
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API services
+│   │   └── types/          # TypeScript types
+│   └── public/             # Static assets
+├── docker/                 # Docker configuration
+├── docs/                   # Documentation
+└── scripts/                # Utility scripts
+```
 
 ## 🔧 Configuration
 
-### Centralized Configuration Structure
-All configuration files are organized in the `config/` directory:
-
-```bash
-config/
-├── root/           # Project-wide configuration (package.json, .gitignore, etc.)
-├── frontend/       # Frontend configuration (vite.config.ts, tailwind.config.ts, etc.)
-├── backend/        # Backend configuration (tsconfig.json, jest.config.js, etc.)
-└── README.md       # Configuration documentation
-```
-
-### Configuration Management
-Use the configuration management script to maintain the centralized structure:
-
-```bash
-# Check configuration status
-./scripts/manage-config.sh status
-
-# Fix broken symbolic links
-./scripts/manage-config.sh fix-links
-
-# Create configuration backup
-./scripts/manage-config.sh backup
-
-# Validate configuration files
-./scripts/manage-config.sh validate
-```
-
 ### Environment Variables
-```bash
-# Backend (.env)
-DATABASE_TYPE=mongodb|postgres
+
+#### Backend (.env)
+```env
+# Database Configuration
+DATABASE_TYPE=mongodb  # or postgres
 PORT=3001
+
+# MongoDB
 MONGODB_URI=mongodb://localhost:27017/scholar_weave
-POSTGRES_URI=postgresql://user:password@localhost:5432/scholar_weave
 
-# Frontend (.env)
-VITE_API_URL=http://localhost:3001
+# PostgreSQL
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/scholar_weave
 ```
 
-### Database Configuration
-- **MongoDB**: Uses Mongoose ODM with embedded documents
-- **PostgreSQL**: Uses Prisma ORM with relational schema
-- **Repository Pattern**: Abstracted data access layer
+## 🗄️ Database Switching
 
-## 🧪 Testing
+The application supports runtime database switching:
 
+### Via API
 ```bash
-# Backend tests
-cd backend && npm test
+# Switch to MongoDB
+curl -X POST http://localhost:3001/api/database/switch \
+  -H "Content-Type: application/json" \
+  -d '{"databaseType": "mongodb"}'
 
-# Frontend tests (when implemented)
-npm test
+# Switch to PostgreSQL
+curl -X POST http://localhost:3001/api/database/switch \
+  -H "Content-Type: application/json" \
+  -d '{"databaseType": "postgres"}'
 ```
+
+### Via Frontend
+Use the Database Toggle component in the Settings page to switch between databases.
 
 ## 📚 API Endpoints
 
-### Core Endpoints
-- `GET /health` - Health check with database status
-- `GET /api/papers` - Get all papers
+### Papers
+- `GET /api/papers` - List all papers
 - `POST /api/papers` - Create new paper
 - `GET /api/papers/:id` - Get paper by ID
+- `PUT /api/papers/:id` - Update paper
 - `DELETE /api/papers/:id` - Delete paper
-- `GET /api/notes` - Get all notes
+
+### Notes
+- `GET /api/notes` - List all notes
 - `POST /api/notes` - Create new note
+- `GET /api/notes/:id` - Get note by ID
+- `PUT /api/notes/:id` - Update note
 - `DELETE /api/notes/:id` - Delete note
-- `POST /api/database/switch` - Switch database
 
-### Available Repository Methods (Not Yet Exposed as APIs)
-- **Papers**: 18+ methods (search, filter, citations, etc.)
-- **Notes**: 13+ methods (annotations, tags, content search, etc.)
-- **Citations**: 12+ methods (citation graphs, statistics, etc.)
+### Citations
+- `GET /api/citations` - List all citations
+- `POST /api/citations` - Create new citation
+- `GET /api/citations/:id` - Get citation by ID
 
-## 🐳 Docker Support
+### Database
+- `POST /api/database/switch` - Switch database type
+- `GET /api/database/status` - Get current database status
 
+## 🧪 Testing
+
+### Backend Tests
 ```bash
-# Start all services
-docker-compose -f docker/docker-compose.yml up -d
-
-# Start specific services
-docker-compose -f docker/docker-compose.yml up -d postgres mongodb
+cd backend
+npm test
 ```
 
-## 📖 Documentation
+### Frontend Tests
+```bash
+cd frontend
+npm test
+```
 
-- **Backend Docs**: `docs/backend.md`
-- **MongoDB Implementation**: `docs/MONGODB_IMPLEMENTATION_SUMMARY.md`
-- **API Documentation**: Available at `/health` endpoint
+## 🐳 Docker Deployment
 
-## 🔄 Development Workflow
+### Development
+```bash
+docker-compose -f docker/docker-compose.yml up -d
+```
 
-1. **Database Changes**: Update models in `backend/src/database/models/`
-2. **API Changes**: Modify routes in `backend/src/api/`
-3. **UI Changes**: Update components in `frontend/src/components/`
-4. **Type Changes**: Update shared types in `shared/types/`
-
-## 🎯 Features
-
-- ✅ **Dual Database Support**: MongoDB and PostgreSQL
-- ✅ **Real-time Database Toggle**: Switch databases via UI
-- ✅ **Modern UI**: React + shadcn/ui + Tailwind CSS
-- ✅ **Type Safety**: Full TypeScript support
-- ✅ **Repository Pattern**: Clean data access abstraction
-- ✅ **Docker Support**: Containerized development environment
-- ✅ **API-First Design**: RESTful API with comprehensive endpoints
+### Production
+```bash
+docker-compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d
+```
 
 ## 🤝 Contributing
 
-1. Follow the established folder structure
-2. Use TypeScript for type safety
-3. Implement repository pattern for data access
-4. Add tests for new features
-5. Update documentation as needed
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **shadcn/ui** for the beautiful component library
+- **Prisma** for the excellent ORM
+- **Tailwind CSS** for the utility-first CSS framework
+- **React** team for the amazing frontend framework
+
+## 📞 Support
+
+If you have any questions or need help, please:
+
+1. Check the [documentation](docs/)
+2. Search existing [issues](https://github.com/tangy83/scholar-weave/issues)
+3. Create a new issue with detailed information
+
+---
+
+**Built with ❤️ for the research community**
