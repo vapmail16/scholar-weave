@@ -47,7 +47,7 @@ const DatabaseToggle = () => {
   // Fetch current database status and stats
   const fetchDatabaseStatus = async () => {
     try {
-      const response = await fetch("http://localhost:3001/health");
+      const response = await fetch("http://localhost:3002/health");
       const data = await response.json();
       setWriteDatabase(data.database.type as DatabaseType);
       
@@ -70,11 +70,11 @@ const DatabaseToggle = () => {
     setIsRefreshing(true);
     try {
       // Fetch stats for MongoDB
-      const mongoResponse = await fetch("http://localhost:3001/api/database/stats?type=mongodb");
+      const mongoResponse = await fetch("http://localhost:3002/api/database/stats?type=mongodb");
       const mongoData = await mongoResponse.json();
       
       // Fetch stats for PostgreSQL
-      const postgresResponse = await fetch("http://localhost:3001/api/database/stats?type=postgres");
+      const postgresResponse = await fetch("http://localhost:3002/api/database/stats?type=postgres");
       const postgresData = await postgresResponse.json();
 
       setDatabaseStats({
@@ -112,7 +112,7 @@ const DatabaseToggle = () => {
     const targetDb: DatabaseType = writeDatabase === "mongodb" ? "postgres" : "mongodb";
 
     try {
-      const response = await fetch("http://localhost:3001/api/database/switch", {
+      const response = await fetch("http://localhost:3002/api/database/switch", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

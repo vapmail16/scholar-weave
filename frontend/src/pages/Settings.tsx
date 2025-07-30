@@ -35,8 +35,8 @@ const SettingsPage = () => {
               <Label htmlFor="api-url">API Base URL</Label>
               <Input
                 id="api-url"
-                placeholder="http://localhost:3001"
-                defaultValue="http://localhost:3001"
+                        placeholder="http://localhost:3002"
+        defaultValue="http://localhost:3002"
               />
             </div>
             <div className="space-y-2">

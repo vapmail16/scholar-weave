@@ -3,7 +3,7 @@ class ApiClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
 
-  constructor(baseUrl: string = import.meta.env.VITE_API_URL || 'http://localhost:3001') {
+  constructor(baseUrl: string = import.meta.env.VITE_API_URL || 'http://localhost:3002') {
     this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
     this.defaultHeaders = {
       'Content-Type': 'application/json',
