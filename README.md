@@ -1,127 +1,118 @@
-# ScholarWeave 🧠📚
+# Scholar-Weave 📚
 
-A comprehensive research paper management system with dual database support (MongoDB & PostgreSQL) built with modern web technologies.
+A modern research paper management system built with React, Node.js, and PostgreSQL/MongoDB.
 
-## ✨ Features
+## 🌟 Features
 
-### 🔄 **Dual Database Support**
-- **MongoDB**: Flexible document-based storage
-- **PostgreSQL**: Relational database with ACID compliance
-- **Runtime Database Switching**: Switch between databases without restart
-- **Repository Pattern**: Clean abstraction layer for database operations
-
-### 📄 **Core Functionality**
-- **Paper Management**: Upload, organize, and search research papers
-- **Note Taking**: Create and manage notes with tags and annotations
-- **Citation Tracking**: Track and manage citations between papers
-- **Advanced Search**: Full-text search with filters and sorting
-
-### 🎨 **Modern Frontend**
-- **React 18** with TypeScript for type safety
-- **Tailwind CSS** for responsive design
-- **shadcn/ui** components for consistent UI
-- **Database Toggle** for easy switching between MongoDB and PostgreSQL
-
-### 🚀 **Backend Architecture**
-- **Node.js** with Express.js
-- **TypeScript** for type safety
-- **Prisma ORM** for PostgreSQL
-- **MongoDB Native Driver** for MongoDB
-- **Repository Pattern** for clean data access
-
-### 🐳 **DevOps & Deployment**
-- **Docker** configuration for easy deployment
-- **Docker Compose** for local development
-- **Environment-based configuration**
-- **Database migration scripts**
+- **📄 Paper Management**: Upload, organize, and search research papers
+- **📝 Note Taking**: Create and manage research notes with tags
+- **🔗 Citation Network**: Explore and visualize citation relationships
+- **🔄 Database Flexibility**: Support for PostgreSQL, MongoDB, and hybrid mode
+- **📱 Modern UI**: Beautiful interface built with shadcn/ui components
+- **⚡ Real-time Updates**: Live database switching and migration
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **shadcn/ui** - Component library
-- **React Router** - Navigation
-- **React Query** - Data fetching
+- **React 18** with TypeScript
+- **Vite** for fast development
+- **Tailwind CSS** for styling
+- **shadcn/ui** for components
+- **React Router** for navigation
+- **React Query** for data fetching
 
 ### Backend
-- **Node.js** - Runtime
-- **Express.js** - Web framework
-- **TypeScript** - Type safety
-- **Prisma** - PostgreSQL ORM
-- **MongoDB Driver** - MongoDB access
-- **Jest** - Testing
+- **Node.js** with TypeScript
+- **Express.js** for API
+- **Prisma** for database ORM
+- **Multer** for file uploads
+- **CORS** and **Helmet** for security
 
 ### Database
-- **PostgreSQL** - Primary relational database
-- **MongoDB** - Document database
-- **Docker** - Containerization
+- **PostgreSQL** for papers
+- **MongoDB** for notes
+- **Hybrid mode** support
+- **Docker** for easy setup
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- Docker and Docker Compose
+- Node.js 18+ and npm
+- Docker Desktop
 - Git
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/tangy83/scholar-weave.git
-cd scholar-weave
-```
+### Installation
 
-### 2. Start Databases with Docker
-```bash
-# Start PostgreSQL and MongoDB
-docker-compose -f docker/docker-compose.yml up -d
-```
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd scholar-weave
+   ```
 
-### 3. Setup Backend
-```bash
-cd backend
-npm install
-cp env.example .env
-# Edit .env with your database credentials
-npm run build
-npm start
-```
+2. **Install dependencies**
+   ```bash
+   # Install frontend dependencies
+   cd frontend
+   npm install
+   
+   # Install backend dependencies
+   cd ../backend
+   npm install
+   ```
 
-### 4. Setup Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
+3. **Set up environment files**
+   ```bash
+   # Backend environment
+   cd backend
+   cp env.example .env
+   # Edit .env with your database settings
+   
+   # Frontend environment
+   cd ../frontend
+   echo "VITE_API_URL=http://localhost:3002" > .env
+   ```
 
-### 5. Access the Application
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:3001
-- **PostgreSQL**: localhost:5432
-- **MongoDB**: localhost:27017
+4. **Start the databases**
+   ```bash
+   docker-compose -f docker/docker-compose.yml up -d postgres mongodb
+   ```
+
+5. **Start the application**
+   ```bash
+   # Start backend (in one terminal)
+   cd backend
+   npm run dev
+   
+   # Start frontend (in another terminal)
+   cd frontend
+   npm run dev
+   ```
+
+6. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:3002
+   - Health Check: http://localhost:3002/health
 
 ## 📁 Project Structure
 
 ```
 scholar-weave/
-├── backend/                 # Backend API server
+├── frontend/                 # React frontend
 │   ├── src/
-│   │   ├── api/            # API routes
-│   │   ├── database/       # Database models and repositories
-│   │   │   ├── models/     # MongoDB models
-│   │   │   └── repositories/ # Repository implementations
-│   │   └── index.ts        # Main server file
-│   ├── prisma/             # Prisma schema and migrations
-│   └── tests/              # Backend tests
-├── frontend/               # React frontend
-│   ├── src/
-│   │   ├── components/     # React components
+│   │   ├── components/      # UI components
 │   │   ├── pages/          # Page components
 │   │   ├── services/       # API services
 │   │   └── types/          # TypeScript types
 │   └── public/             # Static assets
+├── backend/                 # Node.js backend
+│   ├── src/
+│   │   ├── api/            # API routes
+│   │   ├── database/       # Database models and repositories
+│   │   └── index.ts        # Main entry point
+│   ├── prisma/             # Database schema
+│   └── uploads/            # Uploaded files
 ├── docker/                 # Docker configuration
-├── docs/                   # Documentation
+├── config/                 # Shared configuration
 └── scripts/                # Utility scripts
 ```
 
@@ -129,117 +120,100 @@ scholar-weave/
 
 ### Environment Variables
 
-#### Backend (.env)
+**Backend (.env)**
 ```env
-# Database Configuration
-DATABASE_TYPE=mongodb  # or postgres
-PORT=3001
-
-# MongoDB
-MONGODB_URI=mongodb://localhost:27017/scholar_weave
-
-# PostgreSQL
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/scholar_weave
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/scholar_weave"
+MONGODB_URI="mongodb://localhost:27017/scholar_weave"
+DATABASE_TYPE="hybrid"
+PORT=3002
+NODE_ENV=development
+JWT_SECRET=your-secret-key
 ```
 
-## 🗄️ Database Switching
-
-The application supports runtime database switching:
-
-### Via API
-```bash
-# Switch to MongoDB
-curl -X POST http://localhost:3001/api/database/switch \
-  -H "Content-Type: application/json" \
-  -d '{"databaseType": "mongodb"}'
-
-# Switch to PostgreSQL
-curl -X POST http://localhost:3001/api/database/switch \
-  -H "Content-Type: application/json" \
-  -d '{"databaseType": "postgres"}'
+**Frontend (.env)**
+```env
+VITE_API_URL=http://localhost:3002
 ```
-
-### Via Frontend
-Use the Database Toggle component in the Settings page to switch between databases.
 
 ## 📚 API Endpoints
 
 ### Papers
-- `GET /api/papers` - List all papers
-- `POST /api/papers` - Create new paper
-- `GET /api/papers/:id` - Get paper by ID
-- `PUT /api/papers/:id` - Update paper
+- `GET /api/papers` - Get all papers
+- `POST /api/papers` - Create paper
+- `POST /api/papers/upload` - Upload PDF file
+- `GET /api/papers/:id` - Get specific paper
 - `DELETE /api/papers/:id` - Delete paper
 
 ### Notes
-- `GET /api/notes` - List all notes
-- `POST /api/notes` - Create new note
-- `GET /api/notes/:id` - Get note by ID
-- `PUT /api/notes/:id` - Update note
+- `GET /api/notes` - Get all notes
+- `POST /api/notes` - Create note
 - `DELETE /api/notes/:id` - Delete note
 
-### Citations
-- `GET /api/citations` - List all citations
-- `POST /api/citations` - Create new citation
-- `GET /api/citations/:id` - Get citation by ID
-
 ### Database
+- `GET /health` - Health check
 - `POST /api/database/switch` - Switch database type
-- `GET /api/database/status` - Get current database status
+- `POST /api/database/migrate` - Migrate between databases
+- `GET /api/database/stats` - Get database statistics
+
+## 🎯 Usage
+
+### Uploading Papers
+1. Click "Import Your First Paper" or the upload button
+2. Select a PDF file (max 10MB)
+3. Add optional metadata (title, authors, abstract)
+4. Click "Upload Paper"
+
+### Managing Notes
+1. Navigate to the Notes section
+2. Create new notes with tags
+3. Link notes to papers
+4. Search and filter notes
+
+### Database Management
+1. Use the database toggle in the header
+2. Switch between PostgreSQL, MongoDB, and hybrid modes
+3. Migrate data between databases
+4. View real-time statistics
+
+## 🐳 Docker Support
+
+Run the entire application with Docker:
+
+```bash
+docker-compose up --build
+```
 
 ## 🧪 Testing
 
-### Backend Tests
 ```bash
+# Backend tests
 cd backend
 npm test
-```
 
-### Frontend Tests
-```bash
+# Frontend tests
 cd frontend
 npm test
 ```
 
-## 🐳 Docker Deployment
-
-### Development
-```bash
-docker-compose -f docker/docker-compose.yml up -d
-```
-
-### Production
-```bash
-docker-compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d
-```
-
-## 🤝 Contributing
+## 📝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
-## 🙏 Acknowledgments
+## 🤝 Support
 
-- **shadcn/ui** for the beautiful component library
-- **Prisma** for the excellent ORM
-- **Tailwind CSS** for the utility-first CSS framework
-- **React** team for the amazing frontend framework
-
-## 📞 Support
-
-If you have any questions or need help, please:
-
-1. Check the [documentation](docs/)
-2. Search existing [issues](https://github.com/tangy83/scholar-weave/issues)
-3. Create a new issue with detailed information
+If you encounter any issues or have questions:
+1. Check the documentation
+2. Search existing issues
+3. Create a new issue with details
 
 ---
 
-**Built with ❤️ for the research community**
+**Built with ❤️ for researchers and academics**

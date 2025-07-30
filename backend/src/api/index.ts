@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { RepositoryFactory } from '../database/repositories/RepositoryFactory';
 import { databaseConnection } from '../database';
 import { mongodbConnection } from '../mongodb';
@@ -13,11 +16,66 @@ const PORT = process.env['PORT'] || 3002;
 // Initialize repository factory
 const repositoryFactory = RepositoryFactory.getInstance();
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../../uploads');
+    // Create uploads directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with timestamp
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760') // 10MB default
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow PDF files
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files are allowed'));
+    }
+  }
+});
+
 // Middleware
 app.use(helmet());
 app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
+
+// Error handling for multer
+app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        status: 'error',
+        message: 'File too large. Maximum size is 10MB.'
+      });
+    }
+    return res.status(400).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+  if (error.message === 'Only PDF files are allowed') {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Only PDF files are allowed'
+    });
+  }
+  next(error);
+});
 
 // Health check endpoint
 app.get('/health', (_req, res) => {
@@ -50,6 +108,53 @@ app.get('/api/papers', async (_req, res) => {
     res.status(500).json({
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// File upload endpoint for papers
+app.post('/api/papers/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'No file uploaded'
+      });
+    }
+
+    const paperRepository = repositoryFactory.getPaperRepository();
+    
+    // Create paper with file information
+    const paperData: CreatePaperInput = {
+      title: req.body.title || req.file.originalname.replace('.pdf', ''),
+      authors: req.body.authors ? JSON.parse(req.body.authors) : [],
+      abstract: req.body.abstract || '',
+      keywords: req.body.keywords ? JSON.parse(req.body.keywords) : [],
+      publicationDate: req.body.publicationDate || new Date().toISOString(),
+      journal: req.body.journal || '',
+      doi: req.body.doi || '',
+      url: req.body.url || '',
+      filePath: req.file.path,
+      metadata: {
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype,
+        uploadedAt: new Date().toISOString()
+      }
+    };
+
+    const paper = await paperRepository.create(paperData);
+    
+    res.status(201).json({
+      status: 'success',
+      message: 'Paper uploaded successfully',
+      data: paper
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Upload failed'
     });
   }
 });

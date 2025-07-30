@@ -51,32 +51,42 @@ const Library = () => {
     try {
       console.log("Uploading file:", selectedFile.name);
       
-      // For now, we'll create a paper with the file metadata
-      // In a real implementation, you'd parse the PDF and extract metadata
-      const paperData = {
-        title: selectedFile.name.replace('.pdf', ''),
-        abstract: `Paper imported from file: ${selectedFile.name}`,
-        authors: [{ name: "Unknown Author" }],
-        keywords: ["imported", "pdf"],
-        publicationDate: new Date().toISOString().split('T')[0],
-        journal: "Imported Paper",
-        doi: `imported-${Date.now()}`,
-        url: "",
-        citations: [],
-        metadata: {
-          fileName: selectedFile.name,
-          fileSize: selectedFile.size,
-          importDate: new Date().toISOString()
-        }
-      };
+      // Upload the file to the backend
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      
+      // Add optional metadata
+      const title = (document.getElementById('paper-title') as HTMLInputElement)?.value || selectedFile.name.replace('.pdf', '');
+      const authors = (document.getElementById('paper-authors') as HTMLInputElement)?.value || 'Unknown Author';
+      const abstract = (document.getElementById('paper-abstract') as HTMLTextAreaElement)?.value || `Paper imported from file: ${selectedFile.name}`;
+      
+      formData.append('title', title);
+      formData.append('authors', JSON.stringify([{ name: authors }]));
+      formData.append('abstract', abstract);
+      formData.append('keywords', JSON.stringify(['imported', 'pdf']));
+      formData.append('publicationDate', new Date().toISOString().split('T')[0]);
+      formData.append('journal', 'Imported Paper');
+      formData.append('doi', `imported-${Date.now()}`);
+      formData.append('url', '');
 
-      await api.papers.createPaper(paperData);
-      console.log("Paper imported successfully!");
+      const response = await fetch('http://localhost:3002/api/papers/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Upload failed');
+      }
+
+      const result = await response.json();
+      console.log("Paper uploaded successfully!", result);
       setIsUploadDialogOpen(false);
       setSelectedFile(null);
       refetch(); // Refresh the papers list
     } catch (error) {
-      console.error("Failed to import paper:", error);
+      console.error("Failed to upload paper:", error);
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }

@@ -13,12 +13,17 @@ export class PostgresPaperRepository implements IPaperRepository {
   async create(data: CreatePaperInput): Promise<Paper> {
     try {
       // Check if paper with same DOI already exists
-      if (data.doi) {
-        const existing = await this.prisma.paper.findUnique({
-          where: { doi: data.doi }
-        });
-        if (existing) {
-          throw new DuplicateEntityError('Paper', 'doi', data.doi);
+      if (data.doi && data.doi.trim()) {
+        try {
+          const existing = await this.prisma.paper.findUnique({
+            where: { doi: data.doi.trim() }
+          });
+          if (existing) {
+            throw new DuplicateEntityError('Paper', 'doi', data.doi);
+          }
+        } catch (doiError) {
+          // If DOI check fails, continue without DOI validation
+          console.warn('DOI validation failed, continuing without DOI check:', doiError);
         }
       }
 
