@@ -9,6 +9,7 @@ import { RepositoryFactory } from '../database/repositories/RepositoryFactory';
 import { databaseConnection } from '../database';
 import { mongodbConnection } from '../mongodb';
 import { CreatePaperInput, CreateNoteInput } from '../index';
+import mcpRouter from '../mcp/api';
 
 const app = express();
 const PORT = process.env['PORT'] || 3002;
@@ -528,6 +529,9 @@ app.post('/api/database/migrate', async (req, res) => {
     });
   }
 });
+
+// MCP API routes
+app.use('/api/mcp', mcpRouter);
 
 // Database statistics endpoint
 app.get('/api/database/stats', async (req, res) => {
